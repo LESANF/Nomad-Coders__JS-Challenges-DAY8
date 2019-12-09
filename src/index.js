@@ -15,8 +15,7 @@ let finish = [];
 function transToDo(e) {
   const trBtn = e.target;
   const trBtnLi = e.target.parentNode;
-  pendingList.removeChild(trBtnLi);
-
+  deleToDo(e);
   const trLi = document.createElement("li");
   const trSpan = document.createElement("span");
   const trDelBtn = document.createElement("button");
@@ -26,9 +25,9 @@ function transToDo(e) {
 
   trSpan.innerText = trText;
   trDelBtn.innerText = "❌";
-  trDelBtn.addEventListener("click", deleToDo);
+  trDelBtn.addEventListener("click", deleToDoTs);
   RollbackBtn.innerText = "⏪";
-  RollbackBtn.addEventListener("click", transToDo);
+  // RollbackBtn.addEventListener("click", transToDo);
 
   trLi.appendChild(trSpan);
   trLi.appendChild(trDelBtn);
@@ -42,7 +41,7 @@ function transToDo(e) {
   };
 
   finish.push(finObj);
-  saveToDos();
+  saveToDosTs();
 }
 
 function deleToDo(e) {
@@ -57,9 +56,25 @@ function deleToDo(e) {
   saveToDos();
 }
 
+function deleToDoTs(e) {
+  //안지워짐 수정
+  const btn = e.target;
+  const btnLi = btn.parentNode;
+  finishedList.removeChild(btnLi);
+
+  const filterAry = finish.filter(function(el) {
+    return el.id !== parseInt(btnLi.id);
+  });
+  finish = filterAry;
+  saveToDosTs();
+}
+
+function saveToDosTs() {
+  localStorage.setItem(FINISHED_LS, JSON.stringify(finish));
+}
+
 function saveToDos() {
   localStorage.setItem(TODOS_LS, JSON.stringify(toDos));
-  localStorage.setItem(FINISHED_LS, JSON.stringify(finish));
 }
 
 function paintTodo(text) {
@@ -96,6 +111,41 @@ function handeleSubmit(e) {
   input.value = "";
 }
 
+function paintTodoTs(elTsText, elTsId) {
+  const trLi = document.createElement("li");
+  const trSpan = document.createElement("span");
+  const trDelBtn = document.createElement("button");
+  const RollbackBtn = document.createElement("button");
+  const trNewId = elTsId;
+  const trText = elTsText;
+  trSpan.innerText = trText;
+  trDelBtn.innerText = "❌";
+  trDelBtn.addEventListener("click", deleToDoTs);
+  RollbackBtn.innerText = "⏪";
+  // RollbackBtn.addEventListener("click", transToDo);
+  trLi.appendChild(trSpan);
+  trLi.appendChild(trDelBtn);
+  trLi.appendChild(RollbackBtn);
+  trLi.id = trNewId;
+  finishedList.appendChild(trLi);
+  const finObj = {
+    text: trText,
+    id: trNewId
+  };
+  finish.push(finObj);
+  saveToDosTs();
+}
+
+function loadTodoTs() {
+  const currentTs = localStorage.getItem(FINISHED_LS);
+  if (currentTs !== null) {
+    const parseCurrentTs = JSON.parse(currentTs);
+    parseCurrentTs.forEach(function(elTs) {
+      paintTodoTs(elTs.text, elTs.id);
+    });
+  }
+}
+
 function loadTodo() {
   const current = localStorage.getItem(TODOS_LS);
   if (current !== null) {
@@ -108,6 +158,7 @@ function loadTodo() {
 
 function init() {
   loadTodo();
+  loadTodoTs();
   form.addEventListener("submit", handeleSubmit);
 }
 
