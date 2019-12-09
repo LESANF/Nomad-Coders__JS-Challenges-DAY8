@@ -63,7 +63,7 @@ function deleToDoTs(e) {
   finishedList.removeChild(btnLi);
 
   const filterAry = finish.filter(function(el) {
-    return el.id !== parseInt(btnLi.id);
+    return el.id !== btnLi.id;
   });
   finish = filterAry;
   saveToDosTs();
