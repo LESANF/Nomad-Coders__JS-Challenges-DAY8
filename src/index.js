@@ -7,7 +7,7 @@ const form = document.querySelector(".js-form"),
   pendingList = document.querySelector(".js-pendingList"),
   finishedList = document.querySelector(".js-finishedList");
 
-const TODOS_LS = "toDos";
+const TODOS_LS = "PENDING";
 const FINISHED_LS = "FINISHED";
 let toDos = [];
 let finish = [];
@@ -27,7 +27,7 @@ function transToDo(e) {
   trDelBtn.innerText = "❌";
   trDelBtn.addEventListener("click", deleToDoTs);
   RollbackBtn.innerText = "⏪";
-  // RollbackBtn.addEventListener("click", transToDo);
+  RollbackBtn.addEventListener("click", handleRollback);
 
   trLi.appendChild(trSpan);
   trLi.appendChild(trDelBtn);
@@ -57,7 +57,6 @@ function deleToDo(e) {
 }
 
 function deleToDoTs(e) {
-  //안지워짐 수정
   const btn = e.target;
   const btnLi = btn.parentNode;
   finishedList.removeChild(btnLi);
@@ -82,7 +81,7 @@ function paintTodo(text) {
   const span = document.createElement("span");
   const delBtn = document.createElement("button");
   const transBtn = document.createElement("button");
-  const newId = toDos.length + 1;
+  const newId = Math.floor(Math.random() * 1000000000000);
   span.innerText = text;
   delBtn.innerText = "❌";
   delBtn.addEventListener("click", deleToDo);
@@ -111,6 +110,39 @@ function handeleSubmit(e) {
   input.value = "";
 }
 
+function handleRollback(e) {
+  const trBtn = e.target;
+  const trBtnLi = e.target.parentNode;
+  deleToDoTs(e);
+  console.log(trBtn, trBtnLi);
+  const trLi = document.createElement("li");
+  const trSpan = document.createElement("span");
+  const trDelBtn = document.createElement("button");
+  const RollbackBtn = document.createElement("button");
+  const trNewId = trBtnLi.id;
+  const trText = trBtnLi.firstChild.innerText;
+
+  trSpan.innerText = trText;
+  trDelBtn.innerText = "❌";
+  trDelBtn.addEventListener("click", deleToDoTs);
+  RollbackBtn.innerText = "✅";
+  RollbackBtn.addEventListener("click", transToDo);
+
+  trLi.appendChild(trSpan);
+  trLi.appendChild(trDelBtn);
+  trLi.appendChild(RollbackBtn);
+  trLi.id = trNewId;
+  pendingList.appendChild(trLi);
+
+  const finObj = {
+    text: trText,
+    id: trNewId
+  };
+
+  toDos.push(finObj);
+  saveToDos();
+}
+
 function paintTodoTs(elTsText, elTsId) {
   const trLi = document.createElement("li");
   const trSpan = document.createElement("span");
@@ -122,7 +154,7 @@ function paintTodoTs(elTsText, elTsId) {
   trDelBtn.innerText = "❌";
   trDelBtn.addEventListener("click", deleToDoTs);
   RollbackBtn.innerText = "⏪";
-  // RollbackBtn.addEventListener("click", transToDo);
+  RollbackBtn.addEventListener("click", handleRollback);
   trLi.appendChild(trSpan);
   trLi.appendChild(trDelBtn);
   trLi.appendChild(RollbackBtn);
